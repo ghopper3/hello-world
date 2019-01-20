@@ -1,0 +1,258 @@
+---
+title: "FQA Week 1"
+output: html_notebook
+---
+
+Problem 1: Basic R commands
+
+PART 1
+
+Define:
+
+```{r}
+x<-c(4,2,6)
+y<-c(1,0,-1)
+```
+
+Creates two vectors x and y with three values in each.
+
+Decide what the result will be of the following:
+
+1. length(x)
+2. sum(x)
+3. x+y
+4. x*y
+5. x-2
+6. xˆ2
+
+
+```{r}
+length(x)
+```
+
+Lists the number of values in x.
+
+```{r}
+sum(x)
+```
+
+Sums the invididual values in the vector.
+
+```{r}
+x+y
+```
+
+Performs vector addition.
+
+```{r}
+x*y
+```
+
+Vector multiplication.
+
+```{r}
+x-2
+```
+
+Subtracts 2 from each value in the vector.
+
+```{r}
+x^2
+```
+
+Squares each value in the vector.
+
+PART 2
+
+Decide what the following sequences produce in R:
+1. 7:11
+2. seq(2,9)
+3. seq(4,10,by=2)
+4. rep(NA,10)
+
+
+```{r}
+7:11
+```
+
+Lists the values 7 through 11
+
+```{r}
+seq(2,9)
+```
+
+Outputs the numbers 2 through 9.
+
+```{r}
+seq(4,10, by = 2)
+```
+
+Outputs the values 4 - 10 by 2
+
+```{r}
+rep(NA, 10)
+```
+
+Repeats "NA" 10 times.
+
+PART 3
+
+If x = c(5,9,2,3,4,6,7,0,8,12,2,9) decide what each of the following is and use R to check your answers:
+
+1. x[2]
+2. x[2:4]
+3. x[c(2,3,5:7)]
+4. x[-(10:12)]
+
+```{r}
+x = c(5,9,2,3,4,6,7,0,8,12,2,9)
+```
+
+```{r}
+x[2]
+```
+
+Lists the second value in the vector.
+
+```{r}
+x[2:4]
+```
+
+Lists the second through fourth values.
+
+```{r}
+x[c(2,3,5:7)]
+```
+
+Lists the second and third values, then values of the 5th through 7th position.
+
+```{r}
+x[-(10:12)]
+```
+
+*** I anticipated this would output negative values of the 10th through 12th items. It has instead returned the first nine values, which I interpret means the command outputs everything EXCEPT values 10 to 12.
+
+Problem 2: 100 meter dash data and misleading graphs
+We have data from 1896 to 2016 on the winning time of the Mens 100 Meter dash in the Olympic Games.
+Read the data into R as follows:
+
+dashdata=read.csv("mens100.csv")
+
+1. How many variables are in this data set? How many observations are in this data set?
+
+There are two variables (year, time) and 29 observations.
+
+2. One can create a barplot in R as follows (the strange las=2 rotates the x-axis labels)
+
+barplot(dashdata$time,names.arg=dashdata$year,las=2)
+
+3. One can create misleading graphs by changing the starting points on the axes. Compare the following graphs of the same data. The par command tells R to plot two graphs, one on top of each other:
+
+barplot(dashdata$time,names.arg=dashdata$year,las=2)
+barplot(dashdata$time,names.arg=dashdata$year,las=2,ylim=c(9.5,12.5),xpd=FALSE)
+
+*** How do you use the par command?
+
+Problem 3: Playing around with the cars data in R
+
+This question uses an old data set on cars from Consumer Reports. To load the data into R enter the following
+command
+cardata=read.csv("cars10.csv")
+
+```{r}
+cardata=read.csv("cars10.csv")
+```
+
+
+1. How many variables are in the data set? How many observations are in this data set?
+
+11 variables with 74 observations.
+
+2. How many cars in the data set are Domestic? How many are Foreign?
+
+```{r}
+library(plyr)
+count(cardata, 'foreign')
+```
+
+
+
+3. Which car has the lowest mpg? The command which.min(cardata$mpg) might prove helpful here.
+
+```{r}
+cardata[which.min(cardata$mpg),]
+```
+
+4. Which car has the highest price? The command which.max(cardata$price) might prove useful here.
+
+```{r}
+cardata[which.max(cardata$price),]
+```
+
+5. Make a histogram of the price of cars. What shape does the histogram take? (Is it symmetric? Skewed?)
+
+```{r}
+hist(cardata$price,
+     main = "Car Prices",
+     xlab = "Price",
+     xlim = c(500,20000),
+     col = "gray"
+)
+```
+
+
+
+6. Create seperate histograms for the mpg of domestic cars and the mpg of foreign cars. Discuss any obvious differences in the two histograms.
+
+```{r}
+foreign <- subset(cardata, foreign == "Foreign")
+hist(foreign$mpg)
+mean(foreign$mpg)
+```
+
+```{r}
+domestic <- subset(cardata, foreign == "Domestic")
+hist(domestic$mpg)
+mean(domestic$mpg)
+```
+
+Domestic cars in this dataset had a lower MPG.
+
+
+7. Make a scatter plot of the variables weight and length. Does there appear to be any association between the variables?
+
+
+```{r}
+attach(cardata)
+plot(weight, length, main = "Weight vs. Length", xlab = "Car Weight", ylab = "Car Length")
+```
+
+As car length increases, car weight increases in a linear fashion.
+
+Problem 4: Finance data via the quantmod package
+
+An important feature of R is that it is highly extendable. Indeed there are over 800 user contributed packages that add all sorts of functionality to R, from analysis of genetic data to pricing options or fitting neural networks. A quick read about R packages may be found here: >https://www.datacamp.com/community/tutorials/r-packages-guide
+
+For example, the quantmod package reads financial data from Yahoo into R. Report on what the following code does. For those curious as to what is returned by the getSymbols function call, look at the object AAPL to see what it consists of.
+
+If you are using your own install of RStudio on your machine (not using Rstudio.cloud),
+run the line of code below the first time you want to use 'quantmod':
+install.packages("quantmod")
+
+```{r}
+install.packages("quantmod")
+```
+
+```{r}
+library(quantmod)
+getSymbols("AAPL",from="2016-01-01")
+getSymbols("SPY",from="2016-01-01")
+aaplret=as.numeric(monthlyReturn(AAPL))
+spyret=as.numeric(monthlyReturn(SPY))
+par(mfrow=c(2,2))
+plot(Ad(AAPL))
+plot(Ad(SPY))
+hist(Vo(AAPL)/1000)
+plot(spyret,aaplret)
+```
+
