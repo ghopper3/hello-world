@@ -1,0 +1,451 @@
+---
+title: 'Unit 5: Statistical Inference'
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+  word_document: default
+---
+
+```{r}
+library(statsr)
+library(dplyr)
+library(BAS)
+library(devtools)
+library(MASS)
+library(ggplot2)
+library(BSDA)
+```
+
+
+# Part 1: Understanding Confidence Intervals
+
+There are several examples we can use to demonstrate what a confidence interval is and how to interpret 95% coverage.
+
+* \texttt{http://rpsychologist.com/d3/CI/}
+* \texttt{http://wise.cgu.edu/portfolio/demo-confidence-interval-creation/}
+* In the package \texttt{TeachingDemos} run the function \texttt{ci.examp}
+
+# Part 2: Thought Questions - very few calculations required
+
+1. Answer true or false to the following statement and give a reason for your answer: If a 95\% confidence interval for a population mean, $\mu$, is from 33.8 to 39.0, the mean of the population must lie somewhere between 33.8 and 39.0.
+
+**FALSE**
+
+2. If you obtained one thousand 95\% confidence intervals for a population mean, $\mu$, roughly how many of the intervals would actually contain $\mu$?
+
+**950**
+
+3. Suppose we know that “a 95\% confidence interval for the mean age of all U.S. millionaires is from 54.3 years to 62.8 years.” Decide which of the following sentences provide a correct interpretation of the statement in quotes. 
+
+    a) Ninety-five percent of all U.S. millionaires are betweenthe ages of 54.3 years and 62.8 years.
+    b) There is a 95\% chance that the mean age of all U.S. millionaires is between 54.3 years and 62.8 years.
+    c) **We can be 95\% confident that the mean age of all U.S. millionaires is between 54.3 years and 62.8 years.**
+    d) The probability is 0.95 that the mean age of all U.S. millionaires is between 54.3 years and 62.8 years.
+
+4. An analyst, using a random sample of n = 500 families, obtained a 90 percent confidence interval for mean monthly family income for a large population: (\$600, \$800). If the analyst had used a 99 percent confidence coefficient instead, the confidence interval would be: 
+
+    a) Narrower and would involve a larger risk of being incorrect 
+    b) **Wider and would involve a smaller risk of being incorrect** 
+    c) Narrower and would involve a smaller risk of being incorrect
+    d) Wider and would involve a larger risk of being incorrect
+    e) Wider but it cannot be determined whether the risk of being incorrect would be larger or smaller
+
+5. Why is a sample proportion generally used to estimate a population proportion instead of obtaining the population proportion directly?
+
+**For most populations it would be difficult if not impossible to obtain data from the entire population.**
+
+6. Which of the following statements best describes the difference between a point estimate and an interval estimate?
+
+    a) A point estimate gets right to the point, while an interval estimate takes some time to be useful.
+    b) **A point estimate specifies a best guess about a population parameter, while an interval estimate specifies a range of plausible values for the parameter**
+    c) A point estimate provides much more information than an interval estimate. 
+    d) While both are useful when population data is available, neither is especially useful when one only has sample data. 
+
+7. Two confidence interval estimates from the same sample are (16.4,29.8) and (14.3,31.9). What is the sample mean, and if one estimate is at  the 95\% level while the other is at the 99% level, which is which?
+
+The mean of 16.4, 29.8 = 
+
+```{r}
+m <- (29.8-16.4)/2 + 16.4
+m
+m2 <- (31.9-14.3)/2 + 14.3
+m2
+```
+
+**The mean of each sample = 23.1**
+
+**The broader range (14.3,31.9) is the 99% level, while the smaller range (16.4,29.8) has a 95% CI.**
+
+8. The real estate industry claims that it is the best and most effective system to market residential real estate. A survey of randomly selected home sellers in Illinois found that a 95\% confidence interval for the proportion of homes that are sold by a real estate agent is 69\% to 81\%. Interpret the interval in this context.
+    
+    a) 95\% of all random samples of home sellers in Illinois will show that between 69\% and 81\% of homes are sold by a real estate agent.
+    b) In 95\% of the years, between 69\% and 81\% of homes in Illinois are sold by a real estate agent.
+    c) We are 95\% confident that between 69\% and 81\% of homes in this survey are sold by a real estate agent.
+    d) **We are 95\% confident, based on this sample, that between 69\% and 81\% of all homes in Illinois are sold by a real estate agent.**
+    e) 95\% of all homes in Illinois are sold by a real estate agent
+
+9. In general, the smaller the p-value, the
+
+    a) stronger the evidence against the alternative hypothesis
+    b) stronger the evidence for the null hypothesis
+    c) **stronger the evidence against the null hypothesis**
+    d) none of the above
+
+10. Suppose the US Department of Education is interested in knowing if the
+proportion of high school seniors planning on attending college is different than 0.60. They conduct a hypothesis test and get a p-value of 0.039. What interpretation should they make?
+
+    a) They reject Ho, and believe that proportion of high school seniors planning to attend college is less than 0.60.
+    b) They do not reject Ho, and believe that the proportion of high school seniors planning to attend college is 0.60.
+    c) **They reject Ho, and believe that the proportion of high school seniors planning to attend college is different than 0.60.**
+    d) They reject Ho, and believe that the proportion of high school seniors planning to attend college is greater than 0.60.
+    e) They do not reject Ho, and believe that the proportion of high school seniors planning to attend college is different than 0.60.
+
+
+**The null hypothesis is mu = 0.60 | p-value of 0.039 < 0.05, so we reject the null hypothesis.**
+
+11. The purpose of hypothesis testing is to help the researcher reach a conclusion about ?? by examining the data contained in ??.
+
+    a) **a population, a sample**
+    b) an experiment, a computer printout
+    c) a population, an event
+    d) a sample, a population
+
+
+
+# Part 3: Using R and Interpreting Results
+
+12. Medlin and Associates is a regional certified public accounting (CPA) firm located near Minneapolis. Recently, a team conducted an audit for a discount chain. One part of the audit involved developing an estimate for the mean dollar error in total charges that occurs during the checkout process. The firm wishes to develop a 95\% confidence interval estimate for the population mean. The data can be read into R using the command \texttt{mydata=read.csv("cpafirm.csv")}. Note that positive values indicate that the customer was overcharged.
+
+```{r}
+cpafirm <- read.csv("cpafirm.csv")
+
+t.test(cpafirm$amount,conf.level=0.95)
+
+```
+
+
+13. Your statistics instructor claims that 60 percent of the students who take her Elementary Statistics class go through life feeling more enriched. For some reason that she can't quite figure out, most people don't believe her. You decide to check this out on your own. You randomly survey 64 of her past Elementary Statistics students and find that 34 feel more enriched as a result of her class. Now, what do you think?
+
+Ho : enriched = .6
+Ha : enriched >< .6
+n = 64
+k = 34
+
+```{r}
+
+prop.test(34,64, conf.level = 0.95)
+
+```
+
+**From our sample, it is possible our teacher is correct. Her estimate of 60% is within our 95% CI bounds of 40% and 66%, so we fail to reject the null hypothesis that enriched students = 60%**
+
+14. In a sample of 80 Americans, 55% wished that they were rich. In a sample of 90 Europeans, 45% wished that they were rich. Run a hypothesis test to see if
+there is a difference in the proportions against the null that they are equal. 
+
+```{r}
+
+prop.test(c(44,40.5),c(80,90),correct=FALSE)
+```
+
+**Because the P-Value is > 0.05, we fail to reject the null hypothesis, and conclude that there is not sufficient evidence to say there is a difference.**
+
+15. A fast-food franchiser is considering building a restaurant at a downtown location. Based on a financial analysis, a site is acceptable only if the number of pedestrians passing the location during the work day averages more than 200 per hour. To help decide whether to build on the site, a statistics practitioner observes the number of pedestrians who pass the site each hour over a 40-hour workweek. Should the franchiser build on this site? The data can be read into R using the command \texttt{mydata=read.csv("fastfood.csv")}
+
+```{r}
+fastfood <- read.csv("fastfood.csv")
+names(fastfood)
+dim(fastfood)
+
+t.test(fastfood$Pedestrians, mu=200, alt="greater")
+```
+
+**The mean of our sample data > 200 pedestrians per hour, so the site is greenlit.**
+
+
+16. Traffic experts are always looking for
+ways to control automobile speeds. Some communities
+have experimented with “traffic-calming”
+techniques. These include speed bumps and various
+obstructions that force cars to slow down to drive
+around them. Critics point out that the techniques
+are counterproductive because they cause drivers to
+speed on other parts of these roads. In an analysis of
+the effectiveness of speed bumps, a statistics practitioner
+organized a study over a 1-mile stretch of
+city road that had 10 stop signs. He then took a random
+sample of 100 cars and recorded their average
+speed (the speed limit was 30 mph) and the number
+of proper stops at the stop signs. He repeated the
+observations for another sample of 100 cars after
+speed bumps were placed on the road. What does an analysis of the data show? The data can be read into R using the command \texttt{mydata=read.csv("speedbump.csv")}
+
+```{r}
+# Read in and view the data
+speedbump <- read.csv("speedbump.csv")
+dim(speedbump)
+names(speedbump)
+
+# Null Hypothesis : Stops Before = Stops After
+# Alternate Hypothesis : Stops Before >< Stops After
+
+# Calculate mean and standard deviation for both sets of data (before and after)
+
+#x
+mean(speedbump$Stops.Before)
+sd(speedbump$Stops.Before)
+summary(speedbump$Stops.Before)
+
+#y
+mean(speedbump$Stops.After)
+sd(speedbump$Stops.After)
+
+# Two sample testing for means of stops.before and stops.after
+tsum.test(mean.x=7.82,s.x=1.35,n.x=100,mean.y=7.98,s.y=1.36,n.y=100)
+
+# Calculate the same for speed before and after speedbump installed
+# Null Hypothesis : Speed Before = Speed After
+# Alternate Hypothesis : Speed Before >< Speed After
+
+#x
+mean(speedbump$Speeds.Before)
+sd(speedbump$Speeds.Before)
+
+#y
+mean(speedbump$Speeds.After)
+sd(speedbump$Speeds.After)
+
+# Two sample testing for means of speed.before and speed.after
+tsum.test(mean.x=31.74,s.x=2.12,n.x=100, mean.y=31.42,s.y=2.10,n.y=100)
+
+### Approach that didn't work ...
+# Add columns for difference before and after speedbump installed
+#speedbump <- speedbump %>%
+#  mutate(Speed.Diff = Speeds.After - Speeds.Before)
+#speedbump <- speedbump %>%
+#  mutate(Stop.Diff = Stops.After - Stops.Before)
+```
+
+**Using two-sample t-Testing for both the speed and number of stops after installation of the speedbump suggests the speedbump increased the number of stops and decreased speeds by a not insignificant amount.**
+**Stops increased from mean 7.82 to 7.98, which gives us a p-value of 0.40, which is evidence against the null hypothesis.**
+**Speed decreased from mean 31.74 to 31.42, which gives us a p-value of 0.28, which is evidence against the null hypothesis.**
+
+# Part 4: Live Session Questions 
+
+17. Since 1972, the GSS has been tracking American attitudes on a wide variety of topics. With the exception of the U.S. Census, the GSS is the most frequently used source of information about American society. The surveys are now conducted every other year and measure hundreds of variables on thousands of observations. We have reduced the number of variables to about 60 and have deleted the responses that are known as missing data (don't know, refused, etc.). Our data set is taken from 2008. You can read this data into R using the command \texttt{gssdata=read.csv("GSS2008.csv")}.
+
+```{r}
+GSS2008 <- read.csv("GSS2008.csv")
+dim(GSS2008)
+names(GSS2008)
+```
+
+
+    a) Is there sufficient evidence to conclude that people who work for the government (WRKGOVT: 1 = Government, 2 = Private) work a different amount of hours (HRS), on average?
+    
+```{r}
+by(GSS2008$HRS, GSS2008$WRKGOVT,t.test)
+```
+
+**There is a 95% confidence interval that the mean hours worked for nongovernment employees is higher than for government employees.**    
+    
+    b) Is there sufficient evidence to conclude that people who work for the government (WRKGOVT: 1 = Government, 2 = Private) have a different income (INCOME), on average?
+    
+```{r}
+#by(GSS2008$INCOME, GSS2008$WRKGOVT,t.test)
+t.test(GSS2008$INCOME[GSS2008$WRKGOVT == 1], GSS2008$HRS[GSS2008$WRKGOVT == 2])
+
+```
+
+**There is a 95% CI that government employees have a higher salary than non-government employees.**    
+    
+    c) Is there sufficient evidence to conclude that people who work for the government (WRKGOVT: 1 = Government, 2 = Private) stay with their employer shorter or longer (CUREMPYR), on average?
+    
+```{r}
+by(GSS2008$CUREMPYR, GSS2008$WRKGOVT,t.test)
+```
+
+    
+    d) Provide visuals to support the results you find in the previous three parts.  Briefly discuss what you notice.
+    
+```{r}
+# convert numerical values to categorical labels
+# 1 = "Government", 2 = "Private"
+GSS2008$WRKGOVT <- factor(GSS2008$WRKGOVT,
+                          levels = c(1,2),
+                          labels = c("Government", "Private"))
+```
+
+
+```{r}
+boxplot(GSS2008$HRS ~ GSS2008$WRKGOVT, col="light blue", main="Weekly Hours Worked", ylab="Hours Worked", xlab="Government vs. Private Sector")
+```
+
+```{r}
+boxplot(GSS2008$INCOME ~ GSS2008$WRKGOVT, col="gray", main="Income", ylab="Income", xlab="Government vs. Private Sector")
+```
+
+```{r}
+boxplot(GSS2008$CUREMPYR ~ GSS2008$WRKGOVT, col="light blue", main="Tenure", ylab="Years Worked", xlab="Government vs. Private Sector")
+```
+
+    
+    e) For each of the following variables, conduct a test to determine whether Democrats and Republicans (PARTYID3 1 = Democrat, 2 = Republican) differ in their correct answers to the following questions.
+    
+```{r}
+# convert numberical values to categorical labels
+# 1 = "Democrat", 2 = "Republican"
+GSS2008$PARTYID3 <- factor(GSS2008$PARTYID3,
+                          levels = c(1,2),
+                          labels = c("Democrat", "Republican")) 
+```
+    
+    
+        i) Correct answers to ODDS1: A doctor tells a couple that there is one chance in four that their child will have an inherited disease. Does this mean that if the first child has the illness, the next three will not? 1 = Yes, 2 = No. Correct answer: No.
+        
+```{r}
+by(GSS2008$ODDS1,GSS2008$PARTYID3,t.test)
+```
+        
+        ii) Correct answers to ODDS2: A doctor tells a couple that there is one chance in four that their child will have an inherited disease. Does this mean that each of the couple’s children will have the same risk of suffering the illness? 1 = Yes, 2 = No.  Correct answer: Yes.
+        
+```{r}
+by(GSS2008$ODDS2,GSS2008$PARTYID3,t.test)
+```
+        
+        
+        iii) Correct answers to HOTCORE: The center of the earth is very hot. 1 = True, 2 = False.  Correct answer: True.
+        
+```{r}
+by(GSS2008$HOTCORE,GSS2008$PARTYID3,t.test)
+```
+        
+        
+        iv) Correct answers to EARTHSUN: Does Earth go around the Sun or does the Sun go around Earth? 1 = Earth around Sun, 2 = Sun around Earth. Correct answer: Earth around Sun.
+        
+```{r}
+by(GSS2008$EARTHSUN,GSS2008$PARTYID3,t.test)
+```
+        
+    f) Estimate with 95\% confidence the mean number of years with current employer (CUREMPYR).
+    
+```{r}
+t.test(GSS2008$CUREMPYR)
+```
+
+    g) Estimate with 95\% confidence the proportion of Americans whose income is at least \$75,000 (groups 21-25 in INCOME06).
+    
+```{r}
+mean(GSS2008$INCOME06, na.rm=TRUE)
+sd(GSS2008$INCOME06, na.rm=TRUE)
+summary(GSS2008$INCOME06, na.rm=TRUE)
+```
+
+```{r}
+1 - pnorm(21, mean = 16.9, sd = 5.7)
+```
+    
+    
+    h) Can we infer from the data that the proportion of Americans earning at least \$75,000 is different in 2008 (INCOME) than in 2006?
+
+```{r}
+mean(GSS2008$INCOME, na.rm=TRUE)
+sd(GSS2008$INCOME, na.rm=TRUE)
+summary(GSS2008$INCOME, na.rm=TRUE)
+```
+
+**The scale in the two problems is different (range 0-25 vs. actual), but the proportion of Americans earning $75k or more was the 3rd Quartile in 2006; while in 2008 the 3rd Quartile started at $55k.**
+
+18. \textbf{\underline{Case Question: Incorporating Uncertainty}}: The preliminary survey results just came back on the specialty catalog project, and they look great! The average planned order size was \$42.33, well above the \$15 that was hoped for. The group leader will probably be delighted—after all, \$42.33 for each of the 1300000 target addresses comes out to over $55 million in average sales! As part of the preparation for the meeting, one of your responsibilities is to look through the fine print of how the survey was done. The initial memo included few details beyond the \$42.33 figure. After some calls, you locate the employee who did most of the work. Here is what you learn. A random sample was drawn from a proprietary database of 600000 addresses of well-off people who purchase luxury items by mail, and 600 catalogs were mailed together with the questionnaire. You also learn that 55 of the 600 surveys were returned. Of these, 13 indicated that “Yes, I will place an order for items totaling \$ before the end of the year. These amounts were \$9.97, \$12.05, \$29.27, \$228.26, \$6.10, \$87.35, \$27.48, \$8.86, \$19.95, \$13.29, \$44.06, \$11.27, and \$52.39. Well, you now know that there is substantial variability in order size. The 95\% confidence interval about the mean extends from \$5.82 to \$78.84. Multiplying each of these by the size of the target mailing (1300000), you compute bounds from \$7.6 million to $102.5 million. So even after taking randomness into account, it seems to look as though there is real money to be made here. Or is there?
+
+    a) Is it proper to multiply the average order size, \$42.33, by the number of addresses (1,300,000) in the target mailing?
+    b) Is it better, as suggested, to multiply the endpoints of the confidence interval by the target mailing size?
+    c) Would it be better to multiply by the size of the frame used to select the random sample?
+    d) Should anything else trouble you about this situation?
+    e) What is your best estimate, with confidence limits, for potential catalog sales?
+
+19. \textbf{\underline{Case Question: Statistical significance versus practical significance}}: The standard error of most sample estimators approaches zero as sample size increases, so almost any difference between the sample statistic and the hypothesized parameter value, no matter how tiny, will be significant if the sample size is large enough. Researchers who deal with large samples must expect “significant” effects, even when an effect is too slight to have any practical importance. Is an improvement of 0.2 mpg in fuel economy important to Toyota buyers? Is a 0.5 percent loss of market share important to Hertz? Is a laptop battery life increase of 15 minutes important to Dell customers? Such questions depend not so much on statistics as on a cost/benefit calculation. Since resources are always scarce, a dollar spent on a quality improvement always has an opportunity cost (the foregone alternative). If we spend money to make a certain product improvement, then some other project may have to be shelved. Since we can’t do everything, we must ask whether a proposed product improvement is the best use of our scarce resources. These are questions that must be answered by experts in medicine, marketing, product safety, or engineering, rather than by statisticians.
+As an example consider the following question. Suppose we want to compare the IQ test scores of high school students from two different states. In Nevada, we sample 12,000 students and find a mean of 100.15 with a standard deviation of 15. In New Jersey, we sample 188,000 students and find a mean of 99.85 with a standard deviation of 14.75. 
+
+    a) Test if there is a difference in average IQ of students bewteen the two states. 
+    b) Discuss practical versus statistical significance for this example.
+
+
+
+
+
+
+\newpage
+
+# Appendix: Reviewing R Commands for Confidence Intervals and Hypothesis Testing
+
+### Note
+* For testing a mean and you have the raw data, the built in function is \texttt{t.test}
+* For testing a mean using just the summary statistics, the function is \texttt{tsum.test} from the \texttt{BSDA} package.
+* For testing a proportion the built in function is \texttt{prop.test}. 
+
+### Example 1: confidence interval for mean with data
+We have survey data on the usual amount adults spend on their haircut and their gender. Construct a 95\% confidenced interval for the average haircut price.
+
+- R code
+    ```{r,warnings=FALSE,message=FALSE}
+    mydata=read.csv("haircut_survey.csv")
+    t.test(mydata$haircut)
+```
+
+### Example 2: confidence interval for mean with summary statistics
+Over the three-day period from April 1 to April 3, 2017, a national poll surveyed 1500 American households to gauge their levels of discretionary spending. The question asked was how much the respondent spent the day before; not counting the purchase of a home, motor vehicle, or normal household bills. For these sampled households, the average amount spent was \$95 with a standard deviation of s = \$185. Find a 95\% confidence interval for the true average amount spent by American households.
+
+- R code
+    ```{r,warnings=FALSE,message=FALSE}
+    library(BSDA)
+    tsum.test(mean.x=95,s.x=185,n.x=1500)
+```
+
+
+
+### Example 3: test if two means are equal using data
+We have survey data on the usual amount adults spend on their haircut and their gender. Test if on average men and women spend the same amount on their haircuts. 
+
+
+- R code
+    ```{r,warnings=FALSE,message=FALSE}
+     mydata=read.csv("haircut_survey.csv")
+     t.test(mydata$haircut~mydata$male)
+     ## note male is coded 1 for male 0 female
+     ## this could also be done using
+     ## t.test(mydata$haircut[mydata$male==0],mydata$haircut[mydata$male==1])
+```
+
+### Example 4: test if two means are equal using summary statistics
+How do drivers react to sudden large increases in the price of gasoline? To help answer the question, a statistician recorded the speeds
+of cars as they passed a large service station. He recorded the speeds (mph) in the same location after the service station sign showed that the price
+of gasoline had risen by 15 cents. Can we conclude that the speeds differ?
+The summary statistics are as follows:
+Before price increase: n=12, mean=33.33, sd=4.45
+After price increase: n=12, mean=31.4,sd=3.48
+
+- R code
+    ```{r,warnings=FALSE,message=FALSE}
+    library(BSDA)
+    tsum.test(mean.x=33.33,s.x=4.45,n.x=12,mean.y=31.4,s.y=3.48,n.y=12)
+```
+
+### Example 5: confidence interval for proportion
+In a survey of consumer acceptance of a new toothpaste package, a sample of 200 consumers was asked whether they preferred the new package design over the old one; 40 consumers in the sample indicated that they did prefer the new design.  An approximate 95\% confidence interval for the proportion of consumers in the population who prefer the new package design would be:
+
+- R code
+    ```{r,warnings=FALSE,message=FALSE}
+    prop.test(40,200)
+```
+
+### Example 6: test if two proportions are equal
+A 20-minute consumer survey mailed to 500 adults aged 25–34 included a $5 Starbucks gift certificate. The same survey was mailed to 500 adults aged 25–34 without the gift certificate. There were 65 responses from the first group and 45 from the second group. Is the response rate the same for the two mailings?
+
+- R code
+    ```{r,warnings=FALSE,message=FALSE}
+        prop.test(c(65,45),c(500,500))
+```
+
+
+
